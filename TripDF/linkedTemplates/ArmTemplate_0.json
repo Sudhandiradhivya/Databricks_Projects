@@ -7,6 +7,10 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "TripDF"
 		},
+		"AzureDataLakeStorage1_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'AzureDataLakeStorage1'"
+		},
 		"sink_accountKey": {
 			"type": "secureString",
 			"metadata": "Secure string for 'accountKey' of 'sink'"
@@ -18,6 +22,10 @@
 		"trip_transactions_accountKey": {
 			"type": "secureString",
 			"metadata": "Secure string for 'accountKey' of 'trip_transactions'"
+		},
+		"AzureDataLakeStorage1_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://trip.dfs.core.windows.net/"
 		},
 		"sink_properties_typeProperties_url": {
 			"type": "string",
@@ -44,6 +52,23 @@
 		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
 	},
 	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureDataLakeStorage1')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobFS",
+				"typeProperties": {
+					"url": "[parameters('AzureDataLakeStorage1_properties_typeProperties_url')]",
+					"accountKey": {
+						"type": "SecureString",
+						"value": "[parameters('AzureDataLakeStorage1_accountKey')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
 		{
 			"name": "[concat(parameters('factoryName'), '/sink')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
@@ -207,6 +232,197 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/AzureSqlTable2')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "source",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "trip_id",
+						"type": "nvarchar"
+					},
+					{
+						"name": "trip_start_timestamp",
+						"type": "nvarchar"
+					},
+					{
+						"name": "trip_end_timestamp",
+						"type": "nvarchar"
+					},
+					{
+						"name": "driver_id",
+						"type": "nvarchar"
+					},
+					{
+						"name": "driver_name",
+						"type": "nvarchar"
+					},
+					{
+						"name": "source_location_address1",
+						"type": "nvarchar"
+					},
+					{
+						"name": "source_city",
+						"type": "nvarchar"
+					},
+					{
+						"name": "source_province_state",
+						"type": "nvarchar"
+					},
+					{
+						"name": "source_country",
+						"type": "nvarchar"
+					},
+					{
+						"name": "destination_location_address1",
+						"type": "nvarchar"
+					},
+					{
+						"name": "destination_city",
+						"type": "nvarchar"
+					},
+					{
+						"name": "destination_province_state",
+						"type": "nvarchar"
+					},
+					{
+						"name": "destination_country",
+						"type": "nvarchar"
+					},
+					{
+						"name": "total_distance",
+						"type": "nvarchar"
+					},
+					{
+						"name": "total_fare",
+						"type": "nvarchar"
+					},
+					{
+						"name": "trip_status",
+						"type": "nvarchar"
+					},
+					{
+						"name": "delay_start_time_mins",
+						"type": "nvarchar"
+					},
+					{
+						"name": "payment_method",
+						"type": "nvarchar"
+					},
+					{
+						"name": "payment_Status",
+						"type": "nvarchar"
+					},
+					{
+						"name": "customer_id",
+						"type": "nvarchar"
+					},
+					{
+						"name": "customer_name",
+						"type": "nvarchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "ride_ratings1"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/source')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Reward_pointsfact')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "AzureSqlTable2",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						}
+					],
+					"sinks": [
+						{
+							"linkedService": {
+								"referenceName": "AzureDataLakeStorage1",
+								"type": "LinkedServiceReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "filter1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          trip_id as string,",
+						"          trip_start_timestamp as string,",
+						"          trip_end_timestamp as string,",
+						"          driver_id as string,",
+						"          driver_name as string,",
+						"          source_location_address1 as string,",
+						"          source_city as string,",
+						"          source_province_state as string,",
+						"          source_country as string,",
+						"          destination_location_address1 as string,",
+						"          destination_city as string,",
+						"          destination_province_state as string,",
+						"          destination_country as string,",
+						"          total_distance as string,",
+						"          total_fare as string,",
+						"          trip_status as string,",
+						"          delay_start_time_mins as string,",
+						"          payment_method as string,",
+						"          payment_Status as string,",
+						"          customer_id as string,",
+						"          customer_name as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> source1",
+						"source1 filter(1==1) ~> filter1",
+						"filter1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     format: 'delta',",
+						"     fileSystem: 'deltalake',",
+						"     folderPath: 'bronze',",
+						"     mergeSchema: false,",
+						"     autoCompact: false,",
+						"     optimizedWrite: false,",
+						"     vacuum: 0,",
+						"     deletable: false,",
+						"     insertable: true,",
+						"     updateable: false,",
+						"     upsertable: false,",
+						"     umask: 0022,",
+						"     preCommands: [],",
+						"     postCommands: [],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/AzureSqlTable2')]",
+				"[concat(variables('factoryId'), '/linkedServices/AzureDataLakeStorage1')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/trip_transactionfact')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
@@ -289,6 +505,98 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/AzureSqlTable1')]",
 				"[concat(variables('factoryId'), '/linkedServices/trip_transactions')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pipeline1')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Data flow1",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "trip_transactionfact",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"source1": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/trip_transactionfact')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pipeline2')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Data flow1",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "Reward_pointsfact",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"source1": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/Reward_pointsfact')]"
 			]
 		}
 	]

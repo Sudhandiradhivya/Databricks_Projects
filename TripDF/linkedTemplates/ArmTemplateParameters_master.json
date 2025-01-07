@@ -5,6 +5,9 @@
 		"factoryName": {
 			"value": "TripDF"
 		},
+		"AzureDataLakeStorage1_accountKey": {
+			"value": ""
+		},
 		"sink_accountKey": {
 			"value": ""
 		},
@@ -13,6 +16,9 @@
 		},
 		"trip_transactions_accountKey": {
 			"value": ""
+		},
+		"AzureDataLakeStorage1_properties_typeProperties_url": {
+			"value": "https://trip.dfs.core.windows.net/"
 		},
 		"sink_properties_typeProperties_url": {
 			"value": "https://trip.dfs.core.windows.net/"
