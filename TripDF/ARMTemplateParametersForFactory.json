@@ -1,0 +1,33 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "TripDF"
+		},
+		"sink_accountKey": {
+			"value": ""
+		},
+		"source_password": {
+			"value": ""
+		},
+		"trip_transactions_accountKey": {
+			"value": ""
+		},
+		"sink_properties_typeProperties_url": {
+			"value": "https://trip.dfs.core.windows.net/"
+		},
+		"source_properties_typeProperties_server": {
+			"value": "mysqlservertrip.database.windows.net"
+		},
+		"source_properties_typeProperties_database": {
+			"value": "mysqldatabase"
+		},
+		"source_properties_typeProperties_userName": {
+			"value": "testrole"
+		},
+		"trip_transactions_properties_typeProperties_url": {
+			"value": "https://trip.dfs.core.windows.net/"
+		}
+	}
+}
