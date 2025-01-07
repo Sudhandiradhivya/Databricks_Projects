@@ -1,0 +1,9 @@
+{
+	"name": "TripDF",
+	"location": "uksouth",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "cab8704c-2ec0-4a07-aeaa-65f607e86edf",
+		"tenantId": "0ef854d9-b367-45e6-bf60-9b44cb293f84"
+	}
+}
