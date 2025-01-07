@@ -1,5 +1,5 @@
 {
-	"name": "dataflow1",
+	"name": "trip_transactionfact",
 	"properties": {
 		"type": "MappingDataFlow",
 		"typeProperties": {
@@ -23,7 +23,7 @@
 			],
 			"transformations": [
 				{
-					"name": "filter1"
+					"name": "filter"
 				}
 			],
 			"scriptLines": [
@@ -54,8 +54,8 @@
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     format: 'table') ~> source1",
-				"source1 filter(1==1) ~> filter1",
-				"filter1 sink(allowSchemaDrift: true,",
+				"source1 filter(1==1) ~> filter",
+				"filter sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     format: 'delta',",
 				"     mergeSchema: false,",
